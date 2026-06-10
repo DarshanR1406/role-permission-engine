@@ -1,0 +1,19 @@
+{
+  "opts": {
+    "recurse": true,
+    "destination": "./docs",
+    "readme": "README.md",
+    "package": "package.json",
+    "template": "node_modules/clean-jsdoc-theme"
+  },
+  "source": {
+    "include": ["src"],
+    "includePattern": "\\.(jsx|js)$",
+    "excludePattern": "(node_modules/|docs|dist|__tests__)"
+  },
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "plugins": ["plugins/markdown"]
+}

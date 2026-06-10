@@ -1,0 +1,7 @@
+node_modules/
+docs/
+coverage/
+*.test.js
+*.test.jsx
+__tests__/
+.DS_Store

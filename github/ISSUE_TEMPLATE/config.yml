@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Ask a Question
+    url: https://github.com/darshan-raghvani/role-permission-engine/discussions
+    about: Ask questions, request help, or start a discussion instead of opening an issue.
+
+  - name: Documentation
+    url: https://github.com/darshan-raghvani/role-permission-engine/blob/main/README.md
+    about: Read the documentation and getting started guide before opening an issue.
