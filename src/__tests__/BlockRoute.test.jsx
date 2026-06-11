@@ -88,7 +88,13 @@ function renderWithProviders(permissionConfig = {}, blockRouteProps = {}) {
 
   return render(
     <PermissionProvider {...defaultPermission}>
-      <MemoryRouter initialEntries={['/protected']}>
+      <MemoryRouter
+        initialEntries={['/protected']}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
           <Route
             path="/protected"
