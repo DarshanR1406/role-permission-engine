@@ -18,7 +18,7 @@ If you need help with:
 
 please use **GitHub Discussions** instead of creating an issue.
 
-👉 <https://github.com/darshan-raghvani/role-permission-engine/discussions>
+👉 <https://github.com/DarshanR1406/role-permission-engine/discussions>
 
 > GitHub Issues are reserved for **bug reports** and **feature requests**.
 

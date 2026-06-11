@@ -135,5 +135,5 @@ role and permission-based access control library for React applications.
 
 ---
 
-[Unreleased]: https://github.com/your-username/role-permission-engine/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/your-username/role-permission-engine/releases/tag/v1.0.0
+[Unreleased]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/DarshanR1406/role-permission-engine/releases/tag/v1.0.0

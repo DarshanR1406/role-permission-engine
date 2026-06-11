@@ -8,6 +8,8 @@
 [![license](https://img.shields.io/npm/l/role-permission-engine.svg)](./LICENSE)
 [![tests](https://img.shields.io/badge/tests-jest%20%2B%20RTL-green)](./src/__tests__)
 
+🌐 **[Interactive Documentation & Live Demo](https://role-permission-engine.pages.dev/)**
+
 A lightweight, flexible **role and permission-based route guard and UI gate** for React applications.
 
 - ✅ **React Router v5 & v6** dual support
