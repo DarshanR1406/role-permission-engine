@@ -59,6 +59,33 @@ const config = [
       },
     ],
   },
+  // 3. Next.js App Router Middleware Entrypoint
+  {
+    input: 'src/middleware/next.js',
+    external: ['next/server', '../utils/checkPermission'],
+    plugins: [
+      resolve({ extensions: ['.js'] }),
+      commonjs(),
+      babel({
+        babelHelpers: 'bundled',
+        extensions: ['.js'],
+        exclude: 'node_modules/**',
+      }),
+    ],
+    output: [
+      {
+        file: 'dist/middleware.cjs.js',
+        format: 'cjs',
+        sourcemap: true,
+        exports: 'named',
+      },
+      {
+        file: 'dist/middleware.esm.js',
+        format: 'esm',
+        sourcemap: true,
+      },
+    ],
+  },
 ];
 
 export default config;
