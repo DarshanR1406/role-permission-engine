@@ -40,6 +40,7 @@ A lightweight, flexible **role and permission-based route guard and UI gate** fo
 - [Wildcard Permissions](#wildcard-permissions)
 - [React Router v5 Usage](#react-router-v5-usage)
 - [Backend Subpath Usage](#backend-subpath-usage)
+- [Next.js Middleware](#nextjs-middleware)
 - [TypeScript](#typescript)
 - [Examples](#examples)
 - [Contributing](#contributing)
@@ -558,6 +559,55 @@ export function requirePermissions(required = {}) {
     next();
   };
 }
+```
+
+---
+
+## Next.js Middleware
+
+If you are using Next.js (App Router or Pages Router) and want to secure pages at the edge/middleware layer, you can import the middleware helper from `role-permission-engine/middleware`.
+
+### Example
+
+```javascript
+// middleware.js (in your Next.js project root)
+import { createMiddleware } from 'role-permission-engine/middleware';
+import { getSession } from './lib/auth'; // Your custom auth session resolver
+
+export default createMiddleware({
+  // Define route rules to match and protect
+  rules: [
+    {
+      path: '/admin',
+      roles: ['admin'],
+    },
+    {
+      path: '/posts/new',
+      permissions: ['write:posts'],
+    },
+    {
+      path: /^\/billing/,
+      roles: ['admin', 'billing-manager'],
+      roleLogic: 'any',
+    }
+  ],
+  // Function to extract active roles & permissions from request
+  getUser: async (request) => {
+    const session = await getSession(request);
+    if (!session) return null;
+    return {
+      roles: session.roles,
+      permissions: session.permissions,
+    };
+  },
+  loginUrl: '/login',
+  unauthorizedUrl: '/unauthorized',
+});
+
+// Configure middleware matcher path
+export const config = {
+  matcher: ['/admin/:path*', '/posts/new', '/billing/:path*'],
+};
 ```
 
 ---

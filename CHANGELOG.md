@@ -9,7 +9,23 @@ and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 
-> Changes staged for the next release go here.
+> Version 1.2.0 will be released soon. Stay tuned!
+
+---
+
+## [1.1.0] — 2026-06-13
+
+### Added
+
+#### Next.js Middleware subpath (`src/middleware/next.js`)
+
+- **`createMiddleware(options)`**
+  - Next.js App Router Middleware helper factory to protect application routes dynamically at the Edge.
+  - Supports string matching, RegExp matching, and custom matching functions in route rules.
+  - Extract user credentials (roles, permissions) from headers, JWT, cookies, etc. using a custom `getUser` function.
+  - Custom redirect URLs (`loginUrl` and `unauthorizedUrl`).
+  - Supports custom handlers `onUnauthenticated` and `onUnauthorized` to let developers return JSON or handle custom redirect responses.
+  - TypeScript types inside `types/middleware.d.ts`.
 
 ---
 
@@ -127,7 +143,7 @@ role and permission-based access control library for React applications.
 | Field       | Value                                                        |
 |-------------|--------------------------------------------------------------|
 | Name        | `role-permission-engine`                                     |
-| Version     | `1.0.0`                                                      |
+| Version     | `1.1.0`                                                      |
 | License     | MIT                                                          |
 | Author      | Darshan Raghvani                                             |
 | Peer deps   | `react >=16.8`, `react-dom >=16.8`, `react-router-dom >=5`  |
@@ -135,5 +151,6 @@ role and permission-based access control library for React applications.
 
 ---
 
-[Unreleased]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/DarshanR1406/role-permission-engine/releases/tag/v1.0.0

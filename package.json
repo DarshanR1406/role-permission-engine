@@ -1,6 +1,6 @@
 {
   "name": "role-permission-engine",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "A lightweight, flexible role and permission-based route guard and UI gate for React applications supporting React Router v5 and v6.",
   "main": "dist/index.cjs.js",
@@ -15,6 +15,11 @@
       "types": "./types/utils.d.ts",
       "require": "./dist/utils.cjs.js",
       "import": "./dist/utils.esm.js"
+    },
+    "./middleware": {
+      "types": "./types/middleware.d.ts",
+      "require": "./dist/middleware.cjs.js",
+      "import": "./dist/middleware.esm.js"
     }
   },
   "files": [
@@ -38,7 +43,15 @@
     "route-guard",
     "authorization",
     "access-control",
-    "react-router"
+    "react-router",
+    "nextjs",
+    "middleware",
+    "edge-runtime",
+    "cloudflare-workers",
+    "security",
+    "abac",
+    "isomorphic",
+    "route-protection"
   ],
   "author": "Darshan Raghvani",
   "license": "MIT",
@@ -56,7 +69,8 @@
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",
-    "react-router-dom": ">=5.0.0"
+    "react-router-dom": ">=5.0.0",
+    "next": ">=12.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -66,6 +80,9 @@
       "optional": true
     },
     "react-router-dom": {
+      "optional": true
+    },
+    "next": {
       "optional": true
     }
   },
