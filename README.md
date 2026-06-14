@@ -218,6 +218,7 @@ A route guard that **redirects** unauthorized users. Compatible with **React Rou
 | `loadingComponent`  | `ReactNode`   | `null`             | Renders while `isLoading` is `true`. Defaults to `null` (nothing).          |
 | `replace`           | `boolean`     | `true`             | Whether to replace the history entry (prevents Back button to blocked page).|
 | `state`             | `any`         | `undefined`        | Location state passed to the redirect (e.g. `{ from: location }`).          |
+| `asyncCheck`        | `Function`    | `null`             | Custom async/sync verification callback function.                           |
 
 #### Example — React Router v6
 
@@ -276,6 +277,7 @@ Unlike `BlockRoute`, this never redirects — it simply shows or hides its child
 | `fallback`         | `ReactNode`   | `null`  | Content shown when access is denied. Defaults to `null`.             |
 | `loadingComponent` | `ReactNode`   | `null`  | Content shown while `isLoading` is `true`.                           |
 | `negate`           | `boolean`     | `false` | When `true`, inverts the logic (shows children when access is denied)|
+| `asyncCheck`        | `Function`    | `null`  | Custom async/sync verification callback function.                     |
 
 #### Example — With fallback
 
@@ -297,6 +299,33 @@ Unlike `BlockRoute`, this never redirects — it simply shows or hides its child
 </PermissionGate>
 ```
 
+#### Example — Custom Async Verification Handler
+
+```jsx
+import { PermissionGate } from 'role-permission-engine';
+
+function DynamicGatedPanel() {
+  const verifyAccess = async ({ roles, permissions, user }) => {
+    // Custom async checks (e.g. check db resource ownership or subscription status)
+    const response = await fetch(`/api/resources/ownership?user=${user?.id}`);
+    const data = await response.json();
+    return data.isOwner;
+  };
+
+  return (
+    <PermissionGate 
+      asyncCheck={verifyAccess}
+      loadingComponent={<div>Verifying ownership...</div>}
+      fallback={<div>You do not own this resource.</div>}
+    >
+      <div className="owner-panel">
+        <h3>Owner Controls</h3>
+      </div>
+    </PermissionGate>
+  );
+}
+```
+
 ---
 
 ### `withPermission`
@@ -315,6 +344,7 @@ Ideal for wrapping class-based components, or when you prefer HOC composition ov
 | `fallback`         | `ReactNode`      | `null`  | Content shown when access is denied. Defaults to `null`.                |
 | `loadingComponent` | `ReactNode`      | `null`  | Content shown while `isLoading` is `true`.                              |
 | `negate`           | `boolean`        | `false` | When `true`, inverts the logic (shows component when access is denied). |
+| `asyncCheck`        | `Function`       | `null`  | Custom async/sync verification callback function.                       |
 
 #### Example
 
@@ -351,6 +381,12 @@ function usePermission(options?: {
   permissions?: string[];
   roleLogic?: 'any' | 'all';
   permissionLogic?: 'any' | 'all';
+  asyncCheck?: (context: {
+    roles: string[];
+    permissions: string[];
+    user: any;
+    isAuthenticated: boolean;
+  }) => boolean | Promise<boolean>;
 }): {
   allowed: boolean;
   denied: boolean;

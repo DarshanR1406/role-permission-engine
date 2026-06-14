@@ -9,7 +9,23 @@ and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 
-> Version 1.2.0 will be released soon. Stay tuned!
+### Added
+
+- Started development of official **Vue and Angular wrapper adapters** to bring isomorphic RBAC/PBAC capability to Vue 3 (Pinia/Vue Router) and Angular (Guards/Injectables).
+
+---
+
+## [1.2.0] — 2026-06-14
+
+### Added
+
+- **Custom Async Verification Handlers (`asyncCheck`)**
+  - Support for arbitrary asynchronous or synchronous custom checks in `usePermission` hook, `<PermissionGate>`, `<BlockRoute>`, and `withPermission` HOC.
+  - While custom verification resolves, components and hooks expose a loading state (`isLoading: true`) and support custom `loadingComponent` spinner displays.
+  - Standard permission and role verification run first and short-circuit async verification on unauthorized requests for performance and security optimization.
+  - Full TypeScript support for the `asyncCheck` prop.
+  - Comprehensive unit testing with 100% coverage.
+  - Fully updated documentation and examples in library `README.md`.
 
 ---
 
@@ -143,7 +159,7 @@ role and permission-based access control library for React applications.
 | Field       | Value                                                        |
 |-------------|--------------------------------------------------------------|
 | Name        | `role-permission-engine`                                     |
-| Version     | `1.1.0`                                                      |
+| Version     | `1.2.0`                                                      |
 | License     | MIT                                                          |
 | Author      | Darshan Raghvani                                             |
 | Peer deps   | `react >=16.8`, `react-dom >=16.8`, `react-router-dom >=5`  |
@@ -151,6 +167,7 @@ role and permission-based access control library for React applications.
 
 ---
 
-[Unreleased]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/DarshanR1406/role-permission-engine/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/DarshanR1406/role-permission-engine/releases/tag/v1.0.0

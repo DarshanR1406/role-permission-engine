@@ -174,4 +174,57 @@ describe('withPermission HOC', () => {
       expect(screen.getByTestId('fallback')).toBeInTheDocument();
     });
   });
+
+  describe('asyncCheck handler integration', () => {
+    it('renders wrapped component when sync asyncCheck returns true', () => {
+      const ProtectedComponent = withPermission(TargetComponent, {
+        asyncCheck: ({ roles }) => roles.includes('user'),
+      });
+
+      render(
+        <PermissionProvider roles={['user']} isAuthenticated={true}>
+          <ProtectedComponent title="Target Title" />
+        </PermissionProvider>
+      );
+
+      expect(screen.getByTestId('target')).toBeInTheDocument();
+    });
+
+    it('renders fallback when sync asyncCheck returns false', () => {
+      const ProtectedComponent = withPermission(TargetComponent, {
+        asyncCheck: () => false,
+        fallback: <div data-testid="fallback">Denied</div>,
+      });
+
+      render(
+        <PermissionProvider roles={['user']} isAuthenticated={true}>
+          <ProtectedComponent title="Target Title" />
+        </PermissionProvider>
+      );
+
+      expect(screen.queryByTestId('target')).not.toBeInTheDocument();
+      expect(screen.getByTestId('fallback')).toBeInTheDocument();
+    });
+
+    it('renders loadingComponent while async asyncCheck resolves', async () => {
+      const ProtectedComponent = withPermission(TargetComponent, {
+        asyncCheck: () => Promise.resolve(true),
+        loadingComponent: <div data-testid="loading">Verifying…</div>,
+      });
+
+      render(
+        <PermissionProvider roles={['user']} isAuthenticated={true}>
+          <ProtectedComponent title="Target Title" />
+        </PermissionProvider>
+      );
+
+      expect(screen.getByTestId('loading')).toBeInTheDocument();
+      expect(screen.queryByTestId('target')).not.toBeInTheDocument();
+
+      // Wait for it to resolve
+      const target = await screen.findByTestId('target');
+      expect(target).toBeInTheDocument();
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+    });
+  });
 });

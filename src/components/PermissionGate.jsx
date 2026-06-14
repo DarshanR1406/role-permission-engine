@@ -97,6 +97,11 @@ import { usePermission } from '../hooks/usePermission';
  *     <UpgradeBanner />
  *   </PermissionGate>
  *   ```
+ *
+ * @property {function} [asyncCheck]
+ *   Custom async/sync callback function for additional dynamic validation checks.
+ *   - Signature: `(context) => boolean | Promise<boolean>`
+ *   - While executing, the component renders the `loadingComponent` (if provided).
  */
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -169,12 +174,14 @@ export function PermissionGate({
   fallback = null,
   loadingComponent = null,
   negate = false,
+  asyncCheck,
 }) {
   const { allowed, isLoading } = usePermission({
     roles,
     permissions,
     roleLogic,
     permissionLogic,
+    asyncCheck,
   });
 
   if (isLoading) {

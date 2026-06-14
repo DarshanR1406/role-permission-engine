@@ -217,4 +217,40 @@ describe('<BlockRoute />', () => {
       expect(screen.getByTestId('protected-content')).toBeInTheDocument();
     });
   });
+
+  describe('asyncCheck handler integration', () => {
+    it('renders children when sync asyncCheck returns true', () => {
+      renderWithProviders(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: ({ roles }) => roles.includes('user') }
+      );
+      expect(screen.getByTestId('protected-content')).toBeInTheDocument();
+    });
+
+    it('redirects when sync asyncCheck returns false', () => {
+      renderWithProviders(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: () => false }
+      );
+      expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument();
+      expect(screen.getByTestId('unauthorized-page')).toBeInTheDocument();
+    });
+
+    it('renders loadingComponent while async asyncCheck resolves', async () => {
+      renderWithProviders(
+        { roles: ['user'], isAuthenticated: true },
+        { 
+          asyncCheck: () => Promise.resolve(true),
+          loadingComponent: <div data-testid="loading">Verifying…</div>
+        }
+      );
+      expect(screen.getByTestId('loading')).toBeInTheDocument();
+      expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument();
+
+      // Wait for it to resolve
+      const content = await screen.findByTestId('protected-content');
+      expect(content).toBeInTheDocument();
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+    });
+  });
 });

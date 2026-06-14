@@ -8,7 +8,7 @@
  * @module hooks/usePermission
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { usePermissionContext } from '../context/PermissionContext';
 import { checkAccess } from '../utils/checkPermission';
 
@@ -64,6 +64,12 @@ import { checkAccess } from '../utils/checkPermission';
  *     permissionLogic: 'all',
  *   });
  *   ```
+ *
+ * @property {function} [asyncCheck]
+ *   Custom async/sync callback function for additional dynamic validation checks.
+ *   - Signature: `(context) => boolean | Promise<boolean>`
+ *   - The callback receives `{ roles, permissions, user, isAuthenticated }` as an argument.
+ *   - If standard checks pass, this function is invoked. While resolving, `isLoading` is set to `true`.
  */
 
 /**
@@ -175,13 +181,19 @@ export function usePermission({
   permissions: requiredPermissions = [],
   roleLogic = 'any',
   permissionLogic = 'any',
+  asyncCheck,
 } = {}) {
   const {
     roles: userRoles,
     permissions: userPermissions,
+    user,
     isAuthenticated,
     isLoading,
   } = usePermissionContext();
+
+  const [isAsyncLoading, setIsAsyncLoading] = useState(!!asyncCheck);
+  const [asyncAllowed, setAsyncAllowed] = useState(false);
+  const [asyncReason, setAsyncReason] = useState('Async check not started.');
 
   const result = useMemo(() => {
     // While loading, treat as "not allowed" to avoid premature rendering
@@ -213,12 +225,99 @@ export function usePermission({
     isLoading,
   ]);
 
-  return {
-    allowed: result.allowed,
-    denied: !result.allowed,
+  const standardAllowed = result.allowed;
+  const standardReason = result.reason;
+
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
+    if (!standardAllowed) {
+      setAsyncAllowed(false);
+      setIsAsyncLoading(false);
+      setAsyncReason('Failed standard role/permission check.');
+      return;
+    }
+
+    if (!asyncCheck) {
+      setAsyncAllowed(true);
+      setIsAsyncLoading(false);
+      setAsyncReason('No async check required.');
+      return;
+    }
+
+    let isCurrent = true;
+    setIsAsyncLoading(true);
+    setAsyncReason('Async check in progress...');
+
+    try {
+      const resultOrPromise = asyncCheck({
+        roles: userRoles,
+        permissions: userPermissions,
+        user,
+        isAuthenticated,
+      });
+
+      if (
+        resultOrPromise instanceof Promise ||
+        (resultOrPromise && typeof resultOrPromise.then === 'function')
+      ) {
+        resultOrPromise
+          .then((res) => {
+            if (!isCurrent) return;
+            setAsyncAllowed(!!res);
+            setIsAsyncLoading(false);
+            setAsyncReason(res ? 'Async check passed.' : 'Async check failed.');
+          })
+          .catch((err) => {
+            if (!isCurrent) return;
+            setAsyncAllowed(false);
+            setIsAsyncLoading(false);
+            setAsyncReason(`Async check error: ${err?.message || err}`);
+          });
+      } else {
+        // Synchronous result
+        setAsyncAllowed(!!resultOrPromise);
+        setIsAsyncLoading(false);
+        setAsyncReason(resultOrPromise ? 'Async check passed.' : 'Async check failed.');
+      }
+    } catch (err) {
+      setAsyncAllowed(false);
+      setIsAsyncLoading(false);
+      setAsyncReason(`Async check error: ${err?.message || err}`);
+    }
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [
     isLoading,
+    standardAllowed,
+    asyncCheck,
+    userRoles,
+    userPermissions,
+    user,
     isAuthenticated,
-    reason: result.reason,
+  ]);
+
+  const finalIsLoading = isLoading || (!!asyncCheck && isAsyncLoading);
+  const finalAllowed = !isLoading && standardAllowed && (asyncCheck ? asyncAllowed : true);
+
+  return {
+    allowed: finalAllowed,
+    denied: !finalAllowed,
+    isLoading: finalIsLoading,
+    isAuthenticated,
+    reason: isLoading
+      ? 'Auth state is loading.'
+      : !standardAllowed
+      ? standardReason
+      : !!asyncCheck && isAsyncLoading
+      ? asyncReason
+      : asyncCheck
+      ? asyncReason
+      : standardReason,
   };
 }
 

@@ -175,4 +175,58 @@ describe('<PermissionGate />', () => {
       expect(screen.getByTestId('fallback')).toBeInTheDocument();
     });
   });
+
+  describe('asyncCheck handler integration', () => {
+    it('renders children when sync asyncCheck returns true', () => {
+      renderGate(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: ({ roles }) => roles.includes('user') }
+      );
+      expect(screen.getByTestId('gate-content')).toBeInTheDocument();
+    });
+
+    it('renders fallback when sync asyncCheck returns false', () => {
+      renderGate(
+        { roles: ['user'], isAuthenticated: true },
+        { 
+          asyncCheck: () => false,
+          fallback: <div data-testid="fallback">Denied</div>
+        }
+      );
+      expect(screen.queryByTestId('gate-content')).not.toBeInTheDocument();
+      expect(screen.getByTestId('fallback')).toBeInTheDocument();
+    });
+
+    it('renders loadingComponent while async asyncCheck resolves', async () => {
+      renderGate(
+        { roles: ['user'], isAuthenticated: true },
+        { 
+          asyncCheck: () => Promise.resolve(true),
+          loadingComponent: <div data-testid="loading">Verifying…</div>
+        }
+      );
+      expect(screen.getByTestId('loading')).toBeInTheDocument();
+      expect(screen.queryByTestId('gate-content')).not.toBeInTheDocument();
+
+      // Wait for it to resolve
+      const content = await screen.findByTestId('gate-content');
+      expect(content).toBeInTheDocument();
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+    });
+
+    it('inverts rendering when negate is true and asyncCheck resolves to false', async () => {
+      renderGate(
+        { roles: ['user'], isAuthenticated: true },
+        { 
+          asyncCheck: () => Promise.resolve(false),
+          negate: true,
+          loadingComponent: <div data-testid="loading">Verifying…</div>
+        }
+      );
+      expect(screen.getByTestId('loading')).toBeInTheDocument();
+
+      const content = await screen.findByTestId('gate-content');
+      expect(content).toBeInTheDocument();
+    });
+  });
 });
