@@ -62,6 +62,11 @@ import { usePermission } from '../hooks/usePermission';
  *   |---------|--------------------------------------------------|----------|
  *   | `false` | User **has** the required roles / permissions    | ✅ Yes   |
  *   | `true`  | User **does NOT have** the roles / permissions   | No       |
+ *
+ * @property {function} [asyncCheck]
+ *   Custom async/sync callback function for additional dynamic validation checks.
+ *   - Signature: `(context) => boolean | Promise<boolean>`
+ *   - While executing, the component renders the `loadingComponent` (if provided).
  */
 
 // ─── HOC ─────────────────────────────────────────────────────────────────────
@@ -140,6 +145,7 @@ export function withPermission(WrappedComponent, options = {}) {
     fallback = null,
     loadingComponent = null,
     negate = false,
+    asyncCheck,
   } = options;
 
   /**
@@ -154,6 +160,7 @@ export function withPermission(WrappedComponent, options = {}) {
       permissions,
       roleLogic,
       permissionLogic,
+      asyncCheck,
     });
 
     if (isLoading) {

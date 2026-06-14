@@ -219,4 +219,81 @@ describe('usePermission()', () => {
       expect(reason).toMatch(/load/);
     });
   });
+
+  // ── asyncCheck ──────────────────────────────────────────────────────────────
+  describe('asyncCheck handler', () => {
+    it('runs synchronous asyncCheck callback and allows/denies immediately', () => {
+      renderHook(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: ({ roles }) => roles.includes('user') }
+      );
+      expect(screen.getByTestId('allowed').textContent).toBe('true');
+      expect(screen.getByTestId('isLoading').textContent).toBe('false');
+    });
+
+    it('runs asynchronous asyncCheck and resolves access state', async () => {
+      const asyncFn = jest.fn(() => Promise.resolve(true));
+      renderHook(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: asyncFn }
+      );
+      
+      // Initially, it is loading the async check
+      expect(screen.getByTestId('isLoading').textContent).toBe('true');
+      expect(screen.getByTestId('allowed').textContent).toBe('false');
+
+      // Wait for it to resolve
+      await screen.findByText('Async check passed.');
+      expect(screen.getByTestId('allowed').textContent).toBe('true');
+      expect(screen.getByTestId('isLoading').textContent).toBe('false');
+      expect(asyncFn).toHaveBeenCalled();
+    });
+
+    it('denies access and sets loading to false when asyncCheck resolves to false', async () => {
+      const asyncFn = jest.fn(() => Promise.resolve(false));
+      renderHook(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: asyncFn }
+      );
+
+      await screen.findByText('Async check failed.');
+      expect(screen.getByTestId('allowed').textContent).toBe('false');
+      expect(screen.getByTestId('isLoading').textContent).toBe('false');
+    });
+
+    it('skips calling asyncCheck if standard role/permission check fails first', () => {
+      const asyncFn = jest.fn(() => Promise.resolve(true));
+      renderHook(
+        { roles: ['user'], isAuthenticated: true },
+        { roles: ['admin'], asyncCheck: asyncFn }
+      );
+
+      expect(screen.getByTestId('allowed').textContent).toBe('false');
+      expect(screen.getByTestId('isLoading').textContent).toBe('false');
+      expect(asyncFn).not.toHaveBeenCalled();
+    });
+
+    it('handles thrown errors in sync check callback gracefully', () => {
+      renderHook(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: () => { throw new Error('Sync check failed catastrophically'); } }
+      );
+
+      expect(screen.getByTestId('allowed').textContent).toBe('false');
+      expect(screen.getByTestId('isLoading').textContent).toBe('false');
+      expect(screen.getByTestId('reason').textContent).toContain('Sync check failed catastrophically');
+    });
+
+    it('handles promise rejections in async check callback gracefully', async () => {
+      const asyncFn = () => Promise.reject(new Error('Network failure'));
+      renderHook(
+        { roles: ['user'], isAuthenticated: true },
+        { asyncCheck: asyncFn }
+      );
+
+      await screen.findByText(/Network failure/);
+      expect(screen.getByTestId('allowed').textContent).toBe('false');
+      expect(screen.getByTestId('isLoading').textContent).toBe('false');
+    });
+  });
 });

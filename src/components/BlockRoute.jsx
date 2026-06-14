@@ -93,6 +93,11 @@ import { usePermission } from '../hooks/usePermission';
  *     the user back to their original destination after signing in.
  *   - Accessible via `useLocation().state` on the redirect target page.
  *   - Example: `state={{ from: location }}`
+ *
+ * @property {function} [asyncCheck]
+ *   Custom async/sync callback function for additional dynamic validation checks.
+ *   - Signature: `(context) => boolean | Promise<boolean>`
+ *   - While executing, the component renders the `loadingComponent` (if provided).
  */
 
 // ─── Version Detection ────────────────────────────────────────────────────────
@@ -252,12 +257,14 @@ export function BlockRoute({
   loadingComponent = null,
   replace = true,
   state,
+  asyncCheck,
 }) {
   const { allowed, isLoading } = usePermission({
     roles,
     permissions,
     roleLogic,
     permissionLogic,
+    asyncCheck,
   });
 
   // While auth is resolving, render the loading component (or null)

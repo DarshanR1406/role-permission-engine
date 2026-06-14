@@ -116,6 +116,12 @@ export interface UsePermissionOptions {
   permissions?: Permission[];
   roleLogic?: LogicOperator;
   permissionLogic?: LogicOperator;
+  asyncCheck?: (context: {
+    roles: Role[];
+    permissions: Permission[];
+    user: Record<string, any> | null;
+    isAuthenticated: boolean;
+  }) => boolean | Promise<boolean>;
 }
 
 /** Value returned by `usePermission`. */
@@ -155,6 +161,12 @@ export interface BlockRouteProps {
   replace?: boolean;
   /** State to pass to the redirect location. */
   state?: unknown;
+  asyncCheck?: (context: {
+    roles: Role[];
+    permissions: Permission[];
+    user: Record<string, any> | null;
+    isAuthenticated: boolean;
+  }) => boolean | Promise<boolean>;
 }
 
 /**
@@ -183,6 +195,12 @@ export interface PermissionGateProps {
    * does NOT have the roles/permissions.
    */
   negate?: boolean;
+  asyncCheck?: (context: {
+    roles: Role[];
+    permissions: Permission[];
+    user: Record<string, any> | null;
+    isAuthenticated: boolean;
+  }) => boolean | Promise<boolean>;
 }
 
 /**
@@ -211,6 +229,12 @@ export interface WithPermissionOptions {
    * does NOT have the roles/permissions. Defaults to `false`.
    */
   negate?: boolean;
+  asyncCheck?: (context: {
+    roles: Role[];
+    permissions: Permission[];
+    user: Record<string, any> | null;
+    isAuthenticated: boolean;
+  }) => boolean | Promise<boolean>;
 }
 
 /**
