@@ -41,6 +41,8 @@ A lightweight, flexible **role and permission-based route guard and UI gate** fo
 - [React Router v5 Usage](#react-router-v5-usage)
 - [Backend Subpath Usage](#backend-subpath-usage)
 - [Next.js Middleware](#nextjs-middleware)
+- [Vue 3 Integration](#vue-3-integration)
+- [Angular Integration](#angular-integration)
 - [TypeScript](#typescript)
 - [Examples](#examples)
 - [Contributing](#contributing)
@@ -644,6 +646,186 @@ export default createMiddleware({
 export const config = {
   matcher: ['/admin/:path*', '/posts/new', '/billing/:path*'],
 };
+```
+
+---
+
+## Vue 3 Integration
+
+For Vue 3 applications (Composition API), you can secure your component trees, routes, and individual element templates using optional subpath exports from `role-permission-engine/vue`.
+
+### 1. Register the plugin
+
+Register the permission plugin in your app entrypoint:
+
+```javascript
+import { createApp } from 'vue';
+import { createPermissionPlugin, permissionDirective, roleDirective } from 'role-permission-engine/vue';
+import App from './App.vue';
+
+const app = createApp(App);
+
+const permissionPlugin = createPermissionPlugin({
+  roles: ['editor'],
+  permissions: ['write:posts'],
+  isAuthenticated: true,
+  isLoading: false
+});
+
+app.use(permissionPlugin);
+
+// Register optional custom template directives
+app.directive('permission', permissionDirective);
+app.directive('role', roleDirective);
+
+app.mount('#app');
+```
+
+To update permission state dynamically (e.g., after logging in), call the plugin's `updateState` method:
+
+```javascript
+permissionPlugin.updateState({
+  roles: ['admin'],
+  permissions: ['write:posts', 'delete:posts']
+});
+```
+
+### 2. Guard elements via `PermissionGate` or composable
+
+You can gate UI segments using the slot-based `PermissionGate` component:
+
+```html
+<template>
+  <PermissionGate :roles="['admin']" :permissions="['delete:posts']" roleLogic="any">
+    <button @click="deletePost">Delete Post</button>
+    <template #fallback>
+      <span>No delete permissions.</span>
+    </template>
+  </PermissionGate>
+</template>
+
+<script>
+import { PermissionGate } from 'role-permission-engine/vue';
+
+export default {
+  components: { PermissionGate }
+}
+</script>
+```
+
+Or programmatically in your setup script using the `usePermission` composable:
+
+```javascript
+import { usePermission } from 'role-permission-engine/vue';
+
+const { allowed, isLoading } = usePermission({
+  roles: ['editor'],
+  permissions: ['write:posts']
+});
+```
+
+### 3. Use custom directives
+
+Use template directives to toggle visibility or disable/enable buttons directly:
+
+```html
+<!-- Hide element if permission check fails -->
+<button v-permission="'write:posts'">Create Post</button>
+
+<!-- Disable instead of hiding using .disable modifier -->
+<button v-permission.disable="'delete:posts'">Delete Post</button>
+
+<!-- Negate checks using the .negate modifier -->
+<div v-role.negate="'admin'">Welcome, guest/editor!</div>
+```
+
+---
+
+## Angular Integration
+
+For Angular (version 16+ using Signals), you can manage and evaluate permission trees cleanly using the `role-permission-engine/angular` subpath.
+
+### 1. Register the Service
+
+Provide `PermissionService` in your app configuration:
+
+```typescript
+// app.config.ts (or app.module.ts providers list)
+import { PermissionService } from 'role-permission-engine/angular';
+
+export const appConfig = {
+  providers: [
+    PermissionService,
+    // ...
+  ]
+};
+```
+
+### 2. Update and check permissions using Signals
+
+Inject the service in your component and check access reactively:
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { PermissionService } from 'role-permission-engine/angular';
+
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html'
+})
+export class DashboardComponent {
+  protected permission = inject(PermissionService);
+
+  constructor() {
+    // Populate user permissions on load
+    this.permission.updateState({
+      roles: ['editor'],
+      permissions: ['write:posts'],
+      isAuthenticated: true
+    });
+  }
+
+  publish() {
+    // Check permission programmatically
+    const canPublish = this.permission.hasPermission('publish:posts')();
+    if (canPublish) {
+      // publish logic
+    }
+  }
+}
+```
+
+```html
+<!-- dashboard.component.html (Using modern Angular @if control flow + Signals) -->
+@if (permission.hasAccess({ roles: ['admin', 'editor'] })()) {
+  <button (click)="edit()">Edit Page</button>
+}
+
+@if (permission.hasPermission('delete:posts')()) {
+  <button (click)="delete()">Delete Post</button>
+}
+```
+
+### 3. Secure Routes via `permissionGuard`
+
+Protect routes dynamically using the functional `permissionGuard`. The guard automatically awaits async state resolution and handles redirecting:
+
+```typescript
+import { Routes } from '@angular/router';
+import { permissionGuard } from 'role-permission-engine/angular';
+
+export const routes: Routes = [
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [
+      permissionGuard({
+        roles: ['admin'],
+        redirectTo: '/unauthorized',
+      })
+    ]
+  }
+];
 ```
 
 ---

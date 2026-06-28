@@ -9,9 +9,23 @@ and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## [Unreleased]
 
+---
+
+## [1.3.0] — 2026-06-28
+
 ### Added
 
-- Started development of official **Vue and Angular wrapper adapters** to bring isomorphic RBAC/PBAC capability to Vue 3 (Pinia/Vue Router) and Angular (Guards/Injectables).
+- **Official Vue 3 Wrapper Adapter (`role-permission-engine/vue`)**
+  - **`createPermissionPlugin`**: Vue plugin to manage and inject the reactive permission context.
+  - **`usePermission`**: Reactive Vue Composable (equivalent to the React hook) with support for standard check logic and dynamic `asyncCheck` hooks.
+  - **`PermissionGate`**: Slot-based UI conditional rendering component.
+  - **`v-permission` and `v-role` directives**: Convenient template directives supporting `.negate` and `.disable` modifiers.
+  - Full TypeScript declarations for the Vue subpath exports.
+
+- **Official Angular Wrapper Adapter (`role-permission-engine/angular`)**
+  - **`PermissionService`**: Service built using native **Angular Signals** (`signal`, `computed`) for modern reactive state management with zero Angular compilation compiler locks.
+  - **`permissionGuard`**: Functional router guard (`CanActivateFn` compatible) supporting redirection and asynchronous loading/resolution.
+  - Full TypeScript declarations for the Angular subpath exports.
 
 ---
 
