@@ -86,6 +86,60 @@ const config = [
       },
     ],
   },
+  // 4. Vue SDK Entrypoint
+  {
+    input: 'src/vue/index.js',
+    external: ['vue'],
+    plugins: [
+      resolve({ extensions: ['.js'] }),
+      commonjs(),
+      babel({
+        babelHelpers: 'bundled',
+        extensions: ['.js'],
+        exclude: 'node_modules/**',
+      }),
+    ],
+    output: [
+      {
+        file: 'dist/vue.cjs.js',
+        format: 'cjs',
+        sourcemap: true,
+        exports: 'named',
+      },
+      {
+        file: 'dist/vue.esm.js',
+        format: 'esm',
+        sourcemap: true,
+      },
+    ],
+  },
+  // 5. Angular SDK Entrypoint
+  {
+    input: 'src/angular/index.js',
+    external: ['@angular/core', '@angular/router'],
+    plugins: [
+      resolve({ extensions: ['.js'] }),
+      commonjs(),
+      babel({
+        babelHelpers: 'bundled',
+        extensions: ['.js'],
+        exclude: 'node_modules/**',
+      }),
+    ],
+    output: [
+      {
+        file: 'dist/angular.cjs.js',
+        format: 'cjs',
+        sourcemap: true,
+        exports: 'named',
+      },
+      {
+        file: 'dist/angular.esm.js',
+        format: 'esm',
+        sourcemap: true,
+      },
+    ],
+  },
 ];
 
 export default config;
