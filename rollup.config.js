@@ -8,7 +8,7 @@ const config = [
   // 1. React SDK Entrypoint
   {
     input: 'src/index.js',
-    external: ['react', 'react-dom', 'react-router-dom'],
+    external: ['react', 'react-dom', 'react-router-dom', 'react/jsx-runtime', /^react\/.*/],
     plugins: [
       resolve({ extensions: ['.js', '.jsx'] }),
       commonjs(),
@@ -62,7 +62,7 @@ const config = [
   // 3. Next.js App Router Middleware Entrypoint
   {
     input: 'src/middleware/next.js',
-    external: ['next/server', '../utils/checkPermission'],
+    external: ['next/server', /^next\/.*/],
     plugins: [
       resolve({ extensions: ['.js'] }),
       commonjs(),
@@ -143,7 +143,7 @@ const config = [
   // 6. Policy Engine Entrypoint
   {
     input: 'src/utils/policy.js',
-    external: ['./checkPermission'],
+    external: [],
     plugins: [
       resolve({ extensions: ['.js'] }),
       commonjs(),

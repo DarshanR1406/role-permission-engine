@@ -1,6 +1,6 @@
 {
   "name": "role-permission-engine",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "description": "A lightweight, flexible role and permission-based route guard and UI gate for React applications supporting React Router v5 and v6.",
   "main": "dist/index.cjs.js",

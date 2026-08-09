@@ -11,6 +11,16 @@ and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ---
 
+## [1.4.1] — 2026-08-09
+
+### Fixed
+
+- **Rollup External Dependencies & Bundling**:
+  - Inlined internal checkPermission utilities into `policy` and `middleware` bundles to eliminate missing relative import resolution errors (`[UNLOADABLE_DEPENDENCY]`) in Vite and Rollup consumers.
+  - Added `'react/jsx-runtime'` and `/^react\/.*/` to external dependencies pattern in Rollup configuration to avoid bundling JSX runtimes.
+
+---
+
 ## [1.4.0] — 2026-08-09
 
 ### Added
