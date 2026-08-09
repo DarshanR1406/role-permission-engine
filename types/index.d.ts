@@ -251,3 +251,7 @@ export function withPermission<P extends object>(
   options?: WithPermissionOptions
 ): React.FC<P>;
 
+// ─── Dynamic Policy Engine Types ──────────────────────────────────────────────
+export * from './policy';
+
+

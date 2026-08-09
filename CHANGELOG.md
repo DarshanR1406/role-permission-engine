@@ -11,6 +11,20 @@ and the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ---
 
+## [1.4.0] — 2026-08-09
+
+### Added
+
+- **JSON-Based Policy Export/Import & Dynamic Rule Engine (`role-permission-engine/policy`)**
+  - **`PolicyEngine`**: Class to parse, validate, and evaluate dynamic role/permission policies.
+  - **`exportPolicy`**: Utility to serialize policy configurations into formatted JSON strings or plain JS objects with schema validation.
+  - **`importPolicy`**: Utility to parse and validate JSON policy strings or objects into active `PolicyEngine` instances.
+  - **`validatePolicy`**: Utility to check schema syntax, missing fields, duplicate rule IDs, and circular role inheritance loops.
+  - **`evaluatePolicy`**: Dynamic rule evaluator supporting role inheritance, resource/action/route wildcard target matching (`*` and `namespace:*`), ABAC attribute condition checks (`equals`, `in`, `contains`, `greaterThan`, `lessThan`, etc.), priority ordering, and explicit `deny` overrides.
+  - **Subpath Export (`role-permission-engine/policy`)**: Dedicated entrypoint and TypeScript declarations (`types/policy.d.ts`) with zero circular dependencies and complete JSDoc annotations.
+
+---
+
 ## [1.3.0] — 2026-06-28
 
 ### Added

@@ -88,3 +88,21 @@ export { hasPermission } from './utils/checkPermission';
  * @see {@link module:utils/checkPermission.checkAccess}
  */
 export { checkAccess } from './utils/checkPermission';
+
+// ─── Dynamic Policy Engine ───────────────────────────────────────────────────
+
+/**
+ * Dynamic Policy Engine and export/import utilities.
+ *
+ * @see {@link module:utils/policy}
+ */
+export {
+  PolicyEngine,
+  exportPolicy,
+  importPolicy,
+  validatePolicy,
+  evaluatePolicy,
+  resolveInheritedRoles,
+  getPermissionsFromRoles,
+} from './utils/policy';
+

@@ -1,6 +1,6 @@
 {
   "name": "role-permission-engine",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "type": "module",
   "description": "A lightweight, flexible role and permission-based route guard and UI gate for React applications supporting React Router v5 and v6.",
   "main": "dist/index.cjs.js",
@@ -30,6 +30,11 @@
       "types": "./types/angular.d.ts",
       "require": "./dist/angular.cjs.js",
       "import": "./dist/angular.esm.js"
+    },
+    "./policy": {
+      "types": "./types/policy.d.ts",
+      "require": "./dist/policy.cjs.js",
+      "import": "./dist/policy.esm.js"
     }
   },
   "files": [

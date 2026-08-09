@@ -140,6 +140,33 @@ const config = [
       },
     ],
   },
+  // 6. Policy Engine Entrypoint
+  {
+    input: 'src/utils/policy.js',
+    external: ['./checkPermission'],
+    plugins: [
+      resolve({ extensions: ['.js'] }),
+      commonjs(),
+      babel({
+        babelHelpers: 'bundled',
+        extensions: ['.js'],
+        exclude: 'node_modules/**',
+      }),
+    ],
+    output: [
+      {
+        file: 'dist/policy.cjs.js',
+        format: 'cjs',
+        sourcemap: true,
+        exports: 'named',
+      },
+      {
+        file: 'dist/policy.esm.js',
+        format: 'esm',
+        sourcemap: true,
+      },
+    ],
+  },
 ];
 
 export default config;

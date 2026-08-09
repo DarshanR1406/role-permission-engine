@@ -40,6 +40,7 @@ A lightweight, flexible **role and permission-based route guard and UI gate** fo
 - [Wildcard Permissions](#wildcard-permissions)
 - [React Router v5 Usage](#react-router-v5-usage)
 - [Backend Subpath Usage](#backend-subpath-usage)
+- [Dynamic Policy Engine (JSON Export/Import)](#dynamic-policy-engine-json-exportimport)
 - [Next.js Middleware](#nextjs-middleware)
 - [Vue 3 Integration](#vue-3-integration)
 - [Angular Integration](#angular-integration)
@@ -597,6 +598,118 @@ export function requirePermissions(required = {}) {
     next();
   };
 }
+```
+
+---
+
+## Dynamic Policy Engine (JSON Export/Import)
+
+`role-permission-engine` includes a full-featured **Dynamic Policy Engine** supporting JSON serialization/deserialization, schema validation, role inheritance trees, resource/action/route wildcard targets, dynamic ABAC conditions, rule priorities, and explicit `deny` overrides.
+
+You can import utilities from `role-permission-engine/policy` (or the main package root):
+
+```js
+import {
+  PolicyEngine,
+  exportPolicy,
+  importPolicy,
+  validatePolicy,
+  evaluatePolicy
+} from 'role-permission-engine/policy';
+```
+
+### 1. JSON Policy Structure
+
+Policies can be written, stored in databases, or served via remote APIs as JSON documents:
+
+```json
+{
+  "version": "1.0",
+  "name": "Enterprise Security Policy",
+  "roles": {
+    "admin": {
+      "inherits": ["editor"],
+      "permissions": ["*"]
+    },
+    "editor": {
+      "inherits": ["viewer"],
+      "permissions": ["write:documents"]
+    },
+    "viewer": {
+      "permissions": ["read:documents"]
+    }
+  },
+  "rules": [
+    {
+      "id": "rule-deny-restricted",
+      "name": "Block Restricted Documents",
+      "effect": "deny",
+      "priority": 100,
+      "target": { "resource": "documents", "action": "read" },
+      "conditions": { "field": "document.classification", "operator": "equals", "value": "RESTRICTED" }
+    },
+    {
+      "id": "rule-allow-editor-write",
+      "name": "Editor Write Access",
+      "effect": "allow",
+      "priority": 50,
+      "roles": ["editor"],
+      "permissions": ["write:documents"],
+      "target": { "resource": "documents", "action": "write" }
+    }
+  ]
+}
+```
+
+### 2. Exporting Policies (`exportPolicy`)
+
+Export active policy definitions or `PolicyEngine` instances into clean formatted JSON:
+
+```js
+import { exportPolicy } from 'role-permission-engine/policy';
+
+const jsonString = exportPolicy(policyObject, { pretty: true, indent: 2 });
+```
+
+### 3. Importing Policies (`importPolicy`)
+
+Import JSON string configurations into a validated `PolicyEngine` instance:
+
+```js
+import { importPolicy } from 'role-permission-engine/policy';
+
+const engine = importPolicy(jsonString, { strict: true });
+```
+
+### 4. Validating Policies (`validatePolicy`)
+
+Validate schema syntax, duplicate rule IDs, missing fields, or circular role inheritance loops before loading:
+
+```js
+import { validatePolicy } from 'role-permission-engine/policy';
+
+const { valid, errors, warnings } = validatePolicy(policyJson);
+if (!valid) {
+  console.error('Policy validation failed:', errors);
+}
+```
+
+### 5. Evaluating Dynamic Rules (`evaluatePolicy` / `PolicyEngine.evaluate`)
+
+Evaluate user roles, permissions, and request context attributes dynamically:
+
+```js
+const result = engine.evaluate({
+  userRoles: ['editor'],
+  userPermissions: ['write:documents'],
+  userContext: {
+    document: { classification: 'PUBLIC' }
+  },
+  target: { resource: 'documents', action: 'write' }
+});
+
+console.log(result.allowed); // true
+console.log(result.reason);  // "Access granted by policy rule \"Editor Write Access\"."
 ```
 
 ---
